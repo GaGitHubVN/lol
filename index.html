@@ -9,133 +9,109 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --tech-glow: #00f0ff;
-            --geo-glow: #ffb703;
+            --phys-glow: #00f0ff;
+            --chem-glow: #ffb703;
+            --bio-glow: #00ff88;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.12);
         }
         
         body, html { 
-            margin: 0; 
-            padding: 0; 
-            background: linear-gradient(135deg, #121212, #1e1e24); 
+            margin: 0; padding: 0; 
+            background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050505 100%);
             color: #fff; 
             font-family: 'Space Grotesk', sans-serif; 
             overflow-x: hidden; 
             min-height: 100vh;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
+            display: flex; flex-direction: column; align-items: center; 
+        }
+
+        body::before {
+            content: "";
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.03; pointer-events: none; z-index: 1;
         }
         
         .content { 
-            position: relative; z-index: 10; width: 100%; max-width: 1200px; 
-            padding: 3rem 2rem; display: flex; flex-direction: column; align-items: center; 
-            perspective: 2000px; 
+            position: relative; z-index: 10; width: 100%; max-width: 1300px; 
+            padding: 4rem 2rem; display: flex; flex-direction: column; align-items: center; 
             flex: 1; 
         }
         
-        .header-group {
-            text-align: center;
-            margin-bottom: 3rem;
-            animation: fadeDown 1s ease-out;
-        }
-
+        .header-group { text-align: center; margin-bottom: 4rem; animation: fadeDown 1s ease-out; }
         h1 { 
-            font-size: clamp(2rem, 5vw, 4rem); font-weight: 700; 
-            text-transform: uppercase; letter-spacing: 0.1em; 
-            margin: 0 0 10px 0; color: #fff;
-            text-shadow: 0 0 20px rgba(255,255,255,0.2); 
+            font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 700; 
+            text-transform: uppercase; letter-spacing: 0.2em; 
+            margin: 0; background: linear-gradient(to bottom, #fff, #666);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: #aaa;
-            margin: 0;
-            font-weight: 400;
-        }
+        .subtitle { font-size: 1.2rem; color: #888; margin-top: 10px; letter-spacing: 2px; }
         
-        .cards { 
-            display: flex; gap: 4rem; flex-wrap: wrap; justify-content: center; width: 100%; 
+        .cards-grid { 
+            display: flex; flex-wrap: wrap; gap: 3rem; 
+            justify-content: center; width: 100%;
         }
 
         .card { 
-            width: 400px; height: 500px; position: relative; 
-            background: rgba(0, 0, 0, 0.4); 
-            border-radius: 24px; border: 2px solid rgba(255, 255, 255, 0.1); 
+            width: 380px; height: 500px; position: relative; 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(40px) saturate(150%);
+            -webkit-backdrop-filter: blur(40px) saturate(150%);
+            border-radius: 55px; 
+            border: 1px solid var(--glass-border); 
             padding: 3rem; display: flex; flex-direction: column; justify-content: flex-end;
             text-decoration: none; color: #fff; overflow: hidden; 
-            transform-style: preserve-3d; transition: 0.4s ease; 
-            cursor: pointer; animation: fadeUp 1s ease-out backwards; 
+            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            cursor: pointer; animation: fadeUp 1s ease-out backwards;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
         }
-        
-        .card:nth-child(2) { animation-delay: 0.2s; }
 
-        .card-inner { 
-            transform: translateZ(50px); 
-            display: flex; flex-direction: column; position: relative; z-index: 2;
+        .glass-sheen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at var(--x) var(--y), rgba(255,255,255,0.15) 0%, transparent 50%);
+            z-index: 3; pointer-events: none;
         }
-        
-        /* Sử dụng ảnh Phú gửi làm nền */
+
         .meme-bg { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            object-fit: cover; opacity: 0.3; transition: 0.6s ease; 
-            z-index: 0;
-            filter: grayscale(20%); 
+            object-fit: cover; opacity: 0.2; transition: 0.8s ease; 
+            z-index: 0; filter: grayscale(100%) brightness(0.6);
         }
 
-        /* Căn chỉnh để card Công Nghệ hiện Sư tử, card Địa Lý hiện Khỉ */
-        .card-tech .meme-bg { object-position: 9% center; }
-        .card-geo .meme-bg { object-position: 90% center; }
+        .card-phys .meme-bg { object-position: 50% center; }
+        .card-chem .meme-bg { object-position: 90% center; }
+        .card-bio .meme-bg { object-position: 11% center; }
 
-        .card:hover .meme-bg { opacity: 0.7; transform: scale(1.1) rotate(2deg); filter: grayscale(0%); }
+        .card:hover { transform: translateY(-15px); border-color: rgba(255,255,255,0.3); }
+        .card:hover .meme-bg { opacity: 0.5; filter: grayscale(0%) brightness(1); transform: scale(1.1); }
 
-        .card h2 { font-size: 2.5rem; margin: 0 0 0.5rem 0; font-weight: 700; }
-        .card p { font-size: 1.1rem; opacity: 0.8; margin-bottom: 2rem; font-weight: 400; }
+        .card-inner { position: relative; z-index: 4; pointer-events: none; }
+        .card h2 { font-size: 2.8rem; margin: 0; font-weight: 700; letter-spacing: -1px; }
+        .card p { font-size: 1rem; opacity: 0.6; margin: 10px 0 25px 0; }
         
-        .cta-line { width: 0; height: 2px; background: #fff; transition: 0.4s ease; margin-bottom: 1rem; }
-        .card:hover .cta-line { width: 100%; }
+        .cta-btn { 
+            font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 700;
+            background: rgba(255,255,255,0.1); width: fit-content;
+            padding: 12px 25px; border-radius: 100px; transition: 0.4s;
+        }
+        .card:hover .cta-btn { background: #fff; color: #000; }
+
+        .card-phys:hover { box-shadow: 0 40px 80px rgba(0, 240, 255, 0.15); }
+        .card-phys h2 { color: var(--phys-glow); }
         
-        .cta-text { 
-            font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; 
-            display: flex; align-items: center; gap: 8px; font-weight: 700;
-        }
-        .cta-text svg { width: 20px; transition: 0.3s ease; }
-        .card:hover .cta-text svg { transform: translateX(10px); }
+        .card-chem:hover { box-shadow: 0 40px 80px rgba(255, 183, 3, 0.15); }
+        .card-chem h2 { color: var(--chem-glow); }
 
-        .card-tech { box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-color: rgba(0, 240, 255, 0.2); }
-        .card-tech:hover { border-color: var(--tech-glow); box-shadow: 0 15px 40px rgba(0, 240, 255, 0.3); }
-        .card-tech h2 { color: var(--tech-glow); text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
-        .card-tech .cta-line { background: var(--tech-glow); }
-        .card-tech .cta-text { color: var(--tech-glow); }
+        .card-bio:hover { box-shadow: 0 40px 80px rgba(0, 255, 136, 0.15); }
+        .card-bio h2 { color: var(--bio-glow); }
 
-        .card-geo { box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-color: rgba(255, 183, 3, 0.2); }
-        .card-geo:hover { border-color: var(--geo-glow); box-shadow: 0 15px 40px rgba(255, 183, 3, 0.3); }
-        .card-geo h2 { color: var(--geo-glow); text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
-        .card-geo .cta-line { background: var(--geo-glow); }
-        .card-geo .cta-text { color: var(--geo-glow); }
+        .footer { padding: 3rem; font-size: 0.8rem; color: #444; letter-spacing: 3px; }
 
-        .footer {
-            width: 100%;
-            text-align: center;
-            padding: 20px;
-            font-size: 0.9rem;
-            color: #666;
-            background: rgba(0,0,0,0.2);
-            margin-top: 20px;
-        }
+        @keyframes fadeDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeDown { 
-            from { opacity: 0; transform: translateY(-20px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-        @keyframes fadeUp { 
-            from { opacity: 0; transform: translateY(40px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        @media (max-width: 900px) { 
-            .cards { gap: 2rem; }
-            .card { width: 100%; max-width: 400px; height: 450px; padding: 2rem; } 
-        }
+        @media (max-width: 900px) { .card { width: 100%; max-width: 400px; } }
     </style>
 </head>
 <body>
@@ -146,36 +122,36 @@
             <p class="subtitle">pls learning kid 👍</p>
         </div>
         
-        <div class="cards">
-            
-            <a href="https://wayground.com/join?gc=07592929" class="card card-tech" data-tilt>
-                <img src="image_f1fefa.png" alt="Lion Meme" class="meme-bg">
-                
+        <div class="cards-grid">
+            <a href="https://wayground.com/join?gc=07592929" class="card card-phys" data-tilt>
+                <div class="glass-sheen"></div>
+                <img src="Einstein.jpg" alt="Phys" class="meme-bg">
                 <div class="card-inner">
                     <h2>Vật Lí</h2>
                     <p>👇click vào cái này này hay lắm</p>
-                    <div class="cta-line"></div>
-                    <div class="cta-text">
-                        vào học
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </div>
+                    <div class="cta-btn">vào học</div>
                 </div>
             </a>
 
-            <a href="https://wayground.com/join?gc=18413025" class="card card-geo" data-tilt>
-                <img src="image_f1fefa.png" alt="Monkey Meme" class="meme-bg">
-
+            <a href="https://wayground.com/join?gc=18413025" class="card card-chem" data-tilt>
+                <div class="glass-sheen"></div>
+                <img src="licensed-image.jpg" alt="Chem" class="meme-bg">
                 <div class="card-inner">
                     <h2>Hóa Học</h2>
                     <p>👇click vào cái này này hay lắm</p>
-                    <div class="cta-line"></div>
-                    <div class="cta-text">
-                        vào học
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </div>
+                    <div class="cta-btn">vào học</div>
                 </div>
             </a>
 
+            <a href="https://wayground.com/join?gc=04164833" class="card card-bio" data-tilt>
+                <div class="glass-sheen"></div>
+                <img src="images.png" alt="Bio" class="meme-bg">
+                <div class="card-inner">
+                    <h2>Sinh Học</h2>
+                    <p>👇click vào cái này này hay lắm</p>
+                    <div class="cta-btn">vào học</div>
+                </div>
+            </a>
         </div>
     </div>
 
@@ -184,20 +160,25 @@
     </footer>
 
     <script>
-        const cards = document.querySelectorAll('[data-tilt]');
+        const cards = document.querySelectorAll('.card');
         cards.forEach(card => {
             card.addEventListener('mousemove', e => {
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
+
+                card.style.setProperty('--x', `${x}px`);
+                card.style.setProperty('--y', `${y}px`);
+
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -10;
-                const rotateY = ((x - centerX) / centerX) * 10;
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                const rotateX = ((y - centerY) / centerY) * -12;
+                const rotateY = ((x - centerX) / centerX) * 12;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-15px) scale3d(1.02, 1.02, 1.02)`;
             });
+
             card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0) scale3d(1, 1, 1)';
             });
         });
     </script>
